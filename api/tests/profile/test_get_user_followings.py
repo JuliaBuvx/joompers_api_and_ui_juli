@@ -21,7 +21,7 @@ Note:
 class TestGetUserFollowings:
 
     @pytest.mark.xfail
-    def test_get_own_followings_successfull(self, user_logged_in_session_fixture):
+    def test_get_own_followings_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         user_profile_id = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
@@ -34,7 +34,7 @@ class TestGetUserFollowings:
             assert False, f"Response did not match schema: {e}"
 
     @pytest.mark.xfail
-    def test_get_other_user_followings_successfull(self, user_logged_in_session_fixture):
+    def test_get_other_user_followings_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         user_profile_id = data.other_creator_profile_id
@@ -45,7 +45,7 @@ class TestGetUserFollowings:
             validate(instance=response_body, schema=schema.get_followings_response_schema_success())
         except jsonschema.exceptions.ValidationError as e:
             assert False, f"Response did not match schema: {e}"
-    def test_get_user_followings_with_non_existing_user_profile_id(self, user_logged_in_session_fixture):
+    def test_get_user_followings_with_non_existing_user_profile_id_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         user_profile_id = data.non_existing_user_profile_id
@@ -62,7 +62,7 @@ class TestGetUserFollowings:
         None
     ]
     )
-    def test_get_user_followings_with_invalid_format_user_profile_id(self, user_logged_in_session_fixture, user_profile_id):
+    def test_get_user_followings_with_invalid_format_user_profile_id_negative(self, user_logged_in_session_fixture, user_profile_id):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.get_profile_followings(user_profile_id)
@@ -72,7 +72,7 @@ class TestGetUserFollowings:
         assert error_message == "value is not a valid uuid"
 
     @pytest.mark.xfail
-    def test_get_user_followings_unauthorized(self, user_not_logged_in_session_fixture):
+    def test_get_user_followings_unauthorized_positive(self, user_not_logged_in_session_fixture):
         unauthenticated_session = user_not_logged_in_session_fixture
         profile_api = Profile(unauthenticated_session)
         user_profile_id = data.other_creator_profile_id

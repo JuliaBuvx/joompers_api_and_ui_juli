@@ -18,7 +18,7 @@ Note:
 - test to update: test_follow_common_user
 """
 
-class PreTestSetUp:
+class PreTestSetUpFollow:
     """
        The `PreTestSetUp` class is responsible for preparing the environment before the actual tests are executed.
        It ensures that the required state is set for the tests that follow. This setup is crucial for tests that
@@ -36,7 +36,7 @@ class PreTestSetUp:
 class TestFollowCreator:
 
 
-    def test_follow_creator_profile_sucessfull(self, user_logged_in_session_fixture):
+    def test_follow_creator_profile_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         valid_data = {
@@ -48,21 +48,21 @@ class TestFollowCreator:
         assert status_code == 200, f"Failed to follow creator, got {status_code} code"
         assert success_message == "Successfully followed"
 
-    def test_repeated_follow_same_creator(self, user_logged_in_session_fixture):
+    def test_repeated_follow_same_creator_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         valid_data = {
             "creator_profile_id": data.other_creator_profile_id
         }
         response_body, status_code = profile_api.follow_user(valid_data)
-        assert status_code == 400, f"Expected 400 for repeated following, got {status_code} instead"
-
         error_message = response_body.get("message")
+
+        assert status_code == 400, f"Expected 400 for repeated following, got {status_code} instead"
         assert error_message == "You already follow this user"
 
 
     @pytest.mark.xfail
-    def test_follow_common_user(self, user_logged_in_session_fixture):
+    def test_follow_common_user_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         valid_data_common_user = {
@@ -73,7 +73,7 @@ class TestFollowCreator:
         #there is a bug: i can follow regular user (non creator)
         assert status_code == 400
 
-    def test_follow_yourself(self, user_logged_in_session_fixture):
+    def test_follow_yourself_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         current_user_profile_id = user_logged_in_session_fixture[3]
         data_with_current_user_profile_id = {
@@ -94,7 +94,7 @@ class TestFollowCreator:
         {"creator_profile_id": 123},
         {123: data.other_creator_profile_id},
     ])
-    def test_follow_creator_with_invalid_format_user_profile_id(self, user_logged_in_session_fixture, request_data):
+    def test_follow_creator_with_invalid_format_user_profile_id_negative(self, user_logged_in_session_fixture, request_data):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.follow_user(request_data)
@@ -106,7 +106,7 @@ class TestFollowCreator:
         {None: data.other_creator_profile_id},
         {None: None},
     ])
-    def test_follow_creator_with_empty_values_in_request_body(self, user_logged_in_session_fixture, request_data):
+    def test_follow_creator_with_empty_values_in_request_body_negative(self, user_logged_in_session_fixture, request_data):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.follow_user(request_data)
@@ -115,7 +115,7 @@ class TestFollowCreator:
         assert status_code == 422, f"Expected 422 for empty values, got {status_code} instead"
         assert error_message == "field required"
 
-    def test_follow_creator_with_empty_request_body(self, user_logged_in_session_fixture):
+    def test_follow_creator_with_empty_request_body_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         empty_request_body = data.empty_request_body
@@ -125,7 +125,7 @@ class TestFollowCreator:
         assert status_code == 422, f"Expected 422 for empty request, got {status_code} instead"
         assert error_message == "field required"
 
-    def test_follow_creator_with_non_existing_user_profile_id(self, user_logged_in_session_fixture):
+    def test_follow_creator_with_non_existing_user_profile_id_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         data_non_existing_user_profile_id = {
@@ -137,7 +137,7 @@ class TestFollowCreator:
         assert status_code == 400, f"Expected 400 for non existing user_profile_id, got {status_code} instead"
         assert error_message == 'Key profile_creator_id is not present in table "user_profile".'
 
-    def test_follow_creator_unauthorized(self, user_not_logged_in_session_fixture):
+    def test_follow_creator_unauthorized_negative(self, user_not_logged_in_session_fixture):
         unauthenticated_session = user_not_logged_in_session_fixture
         profile_api = Profile(unauthenticated_session)
         valid_data = {

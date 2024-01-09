@@ -21,7 +21,7 @@ Note:
 The PreTestSetUp class contains a setup method that is designed to be executed prior to running tests that depend on a specific initial state. 
 Specifically, the test_start_follow_creator method within this class is used to establish a following relationship between the authenticated user and another creator profile.
 """
-class PreTestSetUp:
+class PreTestSetUpUnfollow:
     """
        The `PreTestSetUp` class is responsible for preparing the environment before the actual tests are executed.
        It ensures that the required state is set for the tests that follow. This setup is crucial for tests that
@@ -40,7 +40,7 @@ class PreTestSetUp:
 class TestUnfollowCreator:
 
 
-    def test_unfollow_creator_profile_sucessfull(self, user_logged_in_session_fixture):
+    def test_unfollow_creator_profile_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         valid_data = {
             "creator_profile_id": data.other_creator_profile_id
@@ -52,7 +52,7 @@ class TestUnfollowCreator:
         assert status_code == 200, "Failed to unfollow creator"
         assert success_message == "Successfully unfollowed"
 
-    def test_repeated_unfollow_same_creator(self, user_logged_in_session_fixture):
+    def test_repeated_unfollow_same_creator_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         valid_data = {
             "creator_profile_id": data.other_creator_profile_id
@@ -64,7 +64,7 @@ class TestUnfollowCreator:
         assert status_code == 400,  f"Expected 400 for repeated unfollow, got {status_code} instead"
         assert error_message == "You don't follow this user"
 
-    def test_unfollow_yourself(self, user_logged_in_session_fixture):
+    def test_unfollow_yourself_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         current_user_profile_id = user_logged_in_session_fixture[3]
         data_with_current_user_profile_id = {
@@ -84,7 +84,7 @@ class TestUnfollowCreator:
         {"creator_profile_id": 123},
         {123: data.other_creator_profile_id},
     ])
-    def test_unfollow_creator_with_invalid_format_user_profile_id(self, user_logged_in_session_fixture, request_data):
+    def test_unfollow_creator_with_invalid_format_user_profile_id_negative(self, user_logged_in_session_fixture, request_data):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.unfollow_user(request_data)
@@ -96,7 +96,7 @@ class TestUnfollowCreator:
         {None: data.other_creator_profile_id},
         {None: None},
     ])
-    def test_unfollow_creator_with_empty_values_in_request_body(self, user_logged_in_session_fixture, request_data):
+    def test_unfollow_creator_with_empty_values_in_request_body_negative(self, user_logged_in_session_fixture, request_data):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.unfollow_user(request_data)
@@ -105,7 +105,7 @@ class TestUnfollowCreator:
         assert status_code == 422, f"Expected 422 for empty values, got {status_code} instead"
         assert error_message == "field required"
 
-    def test_unfollow_creator_with_non_existing_user_profile_id(self, user_logged_in_session_fixture):
+    def test_unfollow_creator_with_non_existing_user_profile_id_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         data_non_existing_user_profile_id = {
             "creator_profile_id": data.non_existing_user_profile_id
@@ -117,7 +117,7 @@ class TestUnfollowCreator:
         assert status_code == 400, f"Expected 400 for non existing user_profile_id, got {status_code} instead"
         assert error_message == "You don't follow this user"
 
-    def test_unfollow_creator_unauthorized(self, user_not_logged_in_session_fixture):
+    def test_unfollow_creator_unauthorized_negative(self, user_not_logged_in_session_fixture):
         unauthenticated_session = user_not_logged_in_session_fixture
         profile_api = Profile(unauthenticated_session)
         valid_data = {

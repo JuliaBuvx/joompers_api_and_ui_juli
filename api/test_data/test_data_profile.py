@@ -16,6 +16,7 @@ class ProfileTestData:
     profession_id_music = "fba72428-aaba-48ba-86ae-9ae2ced13e5e"
     valid_username_pattern = "max"
     non_existing_username_pattern = "uyrewoepowhbjf_333_99"
+    valid_country = {"country": "France"}
 
 
     update_profile_full_valid_data = {
@@ -44,9 +45,6 @@ class ProfileTestData:
 
     empty_request_body = {
     }
-
-
-
 
 class ProfileJsonSchemas:
     @staticmethod

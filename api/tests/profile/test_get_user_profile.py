@@ -18,7 +18,7 @@ Description:
 @allure.feature("Get user profile")
 @allure.severity("Normal")
 class TestGetProfile:
-    def test_get_own_profile_successful(self, user_logged_in_session_fixture):
+    def test_get_own_profile_successful_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         user_profile_id = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
@@ -36,7 +36,7 @@ class TestGetProfile:
         except jsonschema.exceptions.ValidationError as e:
             assert False, f"Response did not match schema: {e}"
 
-    def test_get_other_user_profile_with_role_creator_successful(self, user_logged_in_session_fixture):
+    def test_get_other_user_profile_with_role_creator_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         user_profile_id = data.other_creator_profile_id
@@ -48,7 +48,7 @@ class TestGetProfile:
         except jsonschema.exceptions.ValidationError as e:
             assert False, f"Response did not match schema: {e}"
 
-    def test_get_other_user_profile_for_role_common_user_successful(self, user_logged_in_session_fixture):
+    def test_get_other_user_profile_for_role_common_user_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         user_profile_id = data.other_common_user_profile_id
@@ -60,7 +60,7 @@ class TestGetProfile:
         except jsonschema.exceptions.ValidationError as e:
             assert False, f"Response did not match schema: {e}"
 
-    def test_get_profile_with_non_existing_user_profile_id(self, user_logged_in_session_fixture):
+    def test_get_profile_with_non_existing_user_profile_id_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         user_profile_id = data.non_existing_user_profile_id
@@ -75,7 +75,7 @@ class TestGetProfile:
             123,
             None,
         ])
-    def test_get_profile_with_invalid_format_user_profile_id(self, user_logged_in_session_fixture, user_profile_id):
+    def test_get_profile_with_invalid_format_user_profile_id_negative(self, user_logged_in_session_fixture, user_profile_id):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.get_profile(user_profile_id)
@@ -84,7 +84,7 @@ class TestGetProfile:
         assert status_code == 422, f"Expected 422 for invalid parameters, got {status_code} instead"
         assert error_message == "value is not a valid uuid"
     @pytest.mark.xfail
-    def test_get_user_profile_unauthorized(self, user_not_logged_in_session_fixture):
+    def test_get_user_profile_unauthorized_positive(self, user_not_logged_in_session_fixture):
         unauthenticated_session = user_not_logged_in_session_fixture
         profile_api = Profile(unauthenticated_session)
         user_profile_id = data.other_common_user_profile_id

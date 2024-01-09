@@ -35,7 +35,7 @@ class TestGetUserFollowers:
         "all",
         "user"
     ])
-    def test_get_own_profile_followers_with_every_user_type_successful(self, user_logged_in_session_fixture, user_type):
+    def test_get_own_profile_followers_with_every_user_type_positive(self, user_logged_in_session_fixture, user_type):
         authenticated_session = user_logged_in_session_fixture[0]
         user_profile_id = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
@@ -47,7 +47,7 @@ class TestGetUserFollowers:
         except jsonschema.exceptions.ValidationError as e:
             assert False, f"Response did not match schema: {e}"
 
-    def test_get_other_user_followers_successfull(self, user_logged_in_session_fixture):
+    def test_get_other_user_followers_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         user_profile_id = data.other_creator_profile_id
         profile_api = Profile(authenticated_session)
@@ -66,7 +66,7 @@ class TestGetUserFollowers:
         (1000, 0),
         (10, 1000)
     ])
-    def test_get_user_followers_limit_and_offset(self, user_logged_in_session_fixture, limit, offset):
+    def test_get_user_followers_limit_and_offset_positive(self, user_logged_in_session_fixture, limit, offset):
         authenticated_session = user_logged_in_session_fixture[0]
         user_profile_id = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
@@ -87,7 +87,7 @@ class TestGetUserFollowers:
         123,
         "^$#>/"
     ])
-    def test_get_user_followers_with_invalid_user_type(self, user_logged_in_session_fixture, user_type):
+    def test_get_user_followers_with_invalid_user_type_negative(self, user_logged_in_session_fixture, user_type):
         authenticated_session = user_logged_in_session_fixture[0]
         user_profile_id = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
@@ -109,7 +109,7 @@ class TestGetUserFollowers:
         (10, ""),
         ("", 10),
     ])
-    def test_get_user_followers_invalid_limit_and_offset(self, user_logged_in_session_fixture, limit, offset):
+    def test_get_user_followers_invalid_limit_and_offset_negative(self, user_logged_in_session_fixture, limit, offset):
         authenticated_session = user_logged_in_session_fixture[0]
         user_profile_id = user_logged_in_session_fixture[3]
         profile_api = Profile(authenticated_session)
@@ -118,7 +118,7 @@ class TestGetUserFollowers:
 
         assert status_code == 422, f"Expected 422 for invalid parameters, got {status_code} instead"
 
-    def test_get_user_followers_with_non_existing_user_profile_id(self, user_logged_in_session_fixture):
+    def test_get_user_followers_with_non_existing_user_profile_id_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         user_profile_id = data.non_existing_user_profile_id
@@ -135,7 +135,7 @@ class TestGetUserFollowers:
         None
     ]
     )
-    def test_get_user_followers_with_invalid_format_user_profile_id(self, user_logged_in_session_fixture, user_profile_id):
+    def test_get_user_followers_with_invalid_format_user_profile_id_negative(self, user_logged_in_session_fixture, user_profile_id):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.get_profile_followers(user_profile_id, users_type="all")
@@ -144,7 +144,7 @@ class TestGetUserFollowers:
         assert status_code == 422, f"Expected 422 for invalid parameters, got {status_code} instead"
         assert error_message == "value is not a valid uuid"
 
-    def test_get_user_followers_unauthorized(self, user_not_logged_in_session_fixture):
+    def test_get_user_followers_unauthorized_positive(self, user_not_logged_in_session_fixture):
         unauthenticated_session = user_not_logged_in_session_fixture
         profile_api = Profile(unauthenticated_session)
         user_profile_id = data.other_creator_profile_id

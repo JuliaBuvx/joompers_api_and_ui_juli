@@ -27,7 +27,7 @@ class TestChangeSocialNetwork:
         (data.facebook_id, data.facebook_example_link),
         (data.twitter_id, data.twitter_example_link)
     ])
-    def test_add_social_network_to_profile_successful(self, user_logged_in_session_fixture, social_network_id,
+    def test_add_social_network_to_profile_positive(self, user_logged_in_session_fixture, social_network_id,
                                                       social_network_link):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
@@ -46,7 +46,7 @@ class TestChangeSocialNetwork:
         (None, data.twitter_example_link),
         (None, None)
     ])
-    def test_add_social_network_with_empty_values_in_request_body(self, user_logged_in_session_fixture, social_network_id, social_network_link):
+    def test_add_social_network_with_empty_values_in_request_body_negative(self, user_logged_in_session_fixture, social_network_id, social_network_link):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         data_with_empty_values = {
@@ -59,7 +59,7 @@ class TestChangeSocialNetwork:
         assert status_code == 422, f"Expected 422 for invalid value, got {status_code} code instead"
         assert error_message == "field required"
 
-    def test_add_social_network_with_empty_request_body(self, user_logged_in_session_fixture):
+    def test_add_social_network_with_empty_request_body_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         empty_request_body = data.empty_request_body
         profile_api = Profile(authenticated_session)
@@ -78,7 +78,7 @@ class TestChangeSocialNetwork:
         (123, data.twitter_example_link, "value is not a valid url"),
         (data.twitter_id, 123, "value is not a valid url"),
     ])
-    def test_add_network_with_invalid_values_in_request_body(self, user_logged_in_session_fixture, social_network_id,
+    def test_add_network_with_invalid_values_in_request_body_negative(self, user_logged_in_session_fixture, social_network_id,
                                                       social_network_link, expected_error_msg):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
@@ -92,7 +92,7 @@ class TestChangeSocialNetwork:
         error_message = response_body["detail"][0]["msg"]
         assert error_message == expected_error_msg
 
-    def test_add_network_with_non_existing_social_network_id(self, user_logged_in_session_fixture):
+    def test_add_network_with_non_existing_social_network_id_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         non_existing_data = {
@@ -105,7 +105,7 @@ class TestChangeSocialNetwork:
         assert status_code == 400, f"Expected 400 for non existing user_profile_id, got {status_code} instead"
         assert error_message == "Social network was not found"
 
-    def test_add_social_network_unauthorized(self, user_not_logged_in_session_fixture):
+    def test_add_social_network_unauthorized_negative(self, user_not_logged_in_session_fixture):
         unauthenticated_session = user_not_logged_in_session_fixture
         profile_api = Profile(unauthenticated_session)
         valid_data = {

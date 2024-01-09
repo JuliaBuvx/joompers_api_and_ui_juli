@@ -17,9 +17,8 @@ Description:
 Bug Report: BJT-133
 
 Description:
-- Misnamed remove_folower API method
 - misleading error messages.
-- Suggest rename to remove_follower and use "Follower not found" for non-existent followers.
+- Suggest use "Follower not found" for non-followers.
 
 Note: 
 - Once resolved, tests related to this functionality will be updated accordingly.
@@ -33,7 +32,7 @@ Note:
 class TestRemoveFollower:
 
     @pytest.mark.xfail
-    def test_remove_follower_sucessfull(self, user_logged_in_session_fixture):
+    def test_remove_follower_positive(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         valid_data = {
@@ -45,7 +44,7 @@ class TestRemoveFollower:
         assert status_code == 200, f"Failed to remove follower, got {status_code} code"
         assert success_message == "Successfully removed user from followers"
 
-    def test_repeated_remove_same_follower(self, user_logged_in_session_fixture):
+    def test_repeated_remove_same_follower_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         valid_data = {
@@ -53,11 +52,12 @@ class TestRemoveFollower:
         }
         response_body, status_code = profile_api.remove_follower(valid_data)
         error_message = response_body.get("message")
+        print(error_message)
 
         assert status_code == 400,  f"Expected 400 for repeated remove, got {status_code} instead"
         assert error_message == "You don't follow this user"
 
-    def test_remove_yourself_from_followers(self, user_logged_in_session_fixture):
+    def test_remove_yourself_from_followers_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         current_user_profile_id = user_logged_in_session_fixture[3]
@@ -66,6 +66,7 @@ class TestRemoveFollower:
         }
         response_body, status_code = profile_api.remove_follower(data_with_current_user_profile_id)
         error_message = response_body.get("message")
+        print(error_message)
 
         assert status_code == 400, f"Expected 422 for removing yourself, got {status_code} instead"
         assert error_message == "You don't follow this user"
@@ -78,7 +79,7 @@ class TestRemoveFollower:
         {"user_profile_id": 123},
         {123: data.other_common_user_profile_id},
     ])
-    def test_remove_follower_with_invalid_format_user_profile_id(self, user_logged_in_session_fixture, request_data):
+    def test_remove_follower_with_invalid_format_user_profile_id_negative(self, user_logged_in_session_fixture, request_data):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.unfollow_user(request_data)
@@ -90,7 +91,7 @@ class TestRemoveFollower:
         {None: data.other_common_user_profile_id},
         {None: None},
     ])
-    def test_remove_follower_with_empty_values_in_request_body(self, user_logged_in_session_fixture, request_data):
+    def test_remove_follower_with_empty_values_in_request_body_negative(self, user_logged_in_session_fixture, request_data):
         authenticated_session = user_logged_in_session_fixture[0]
         profile_api = Profile(authenticated_session)
         response_body, status_code = profile_api.unfollow_user(request_data)
@@ -99,7 +100,7 @@ class TestRemoveFollower:
         assert status_code == 422, f"Expected 422 for empty values, got {status_code} instead"
         assert error_message == "field required"
 
-    def test_remove_follower_with_non_existing_user_profile_id(self, user_logged_in_session_fixture):
+    def test_remove_follower_with_non_existing_user_profile_id_negative(self, user_logged_in_session_fixture):
         authenticated_session = user_logged_in_session_fixture[0]
         data_non_existing_user_profile_id = {
             "user_profile_id": data.non_existing_user_profile_id
@@ -109,9 +110,9 @@ class TestRemoveFollower:
         error_message = response_body["message"]
 
         assert status_code == 400, f"Expected 400 for non existing user_profile_id, got {status_code} instead"
-        assert error_message == "You don't follow this user"
+        assert error_message == "Follower not found"
 
-    def test_remove_follower_unauthorized(self, user_not_logged_in_session_fixture):
+    def test_remove_follower_unauthorized_negative(self, user_not_logged_in_session_fixture):
         unauthenticated_session = user_not_logged_in_session_fixture
         profile_api = Profile(unauthenticated_session)
         valid_data = {

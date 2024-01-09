@@ -87,7 +87,7 @@ class Profile:
         return response_json, response.status_code
     def remove_follower(self, data):
         response = self.session.post(url=
-                                     self.base_url + "/api/profile/remove_folower", params=data
+                                     self.base_url + "/api/profile/remove_follower", params=data
                                      )
         try:
             response_json = response.json()
